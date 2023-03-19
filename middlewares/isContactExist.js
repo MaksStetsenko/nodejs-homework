@@ -10,7 +10,7 @@ exports.isContactExist = async (req, res, next) => {
   const [contact] = contacts.filter((contact) => +contact.id === contactId);
 
   if (!contact) {
-    return res.status(404).json({ message: "Error 404: Not found" });
+    return res.status(404).json({ message: "Not found" });
   }
 
   next();

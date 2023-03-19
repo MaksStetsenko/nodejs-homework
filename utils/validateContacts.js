@@ -1,11 +1,13 @@
 const Joi = require("joi");
 
 const validatedContactOnPost = (req, res, next) => {
-  const { error } = Joi.object({
-    name: Joi.string().alphanum().required(),
-    email: Joi.string().email().required(),
-    phone: Joi.string().required(),
-  }).validate(req.body);
+  const { error } = Joi.object()
+    .keys({
+      name: Joi.string().alphanum().required(),
+      email: Joi.string().email().required(),
+      phone: Joi.string().required(),
+    })
+    .validate(req.body);
 
   if (error) {
     const errorField = error.details[0].context.key;
