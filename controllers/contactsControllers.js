@@ -1,46 +1,86 @@
 const {
   listContacts,
   getContactById,
+  removeContact,
   addContact,
   updateContact,
-  removeContact,
+  updateStatusContact,
 } = require("../models/contacts");
 
-const getContactsController = async (_, res, __) => {
-  const contacts = JSON.parse(await listContacts());
-  res.status(200).send(contacts);
+const getContactsController = async (req, res, next) => {
+  try {
+    const contacts = await listContacts();
+    res.status(200).send(contacts);
+  } catch (error) {
+    console.log("error :>> ", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-const getContactByIdController = async (req, res, _) => {
-  const contactId = +req.params.contactId;
-  const contact = await getContactById(contactId);
+const getContactByIdController = async (req, res, next) => {
+  try {
+    const contactId = req.params.contactId;
+    const contact = await getContactById(contactId);
 
-  res.status(201).send(contact);
+    res.status(200).json(contact);
+  } catch (error) {
+    console.log("error :>> ", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-const addContactController = async (req, res, _) => {
-  const newContact = await addContact(req.body);
-  res.status(201).json(newContact);
+const addContactController = async (req, res, next) => {
+  try {
+    const newContact = await addContact(req.body);
+    res.status(201).json(newContact);
+  } catch (error) {
+    console.log("error :>> ", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-const putContactController = async (req, res, _) => {
-  const contactId = +req.params.contactId;
-  const updatedContact = await updateContact(contactId, req.body);
+const deleteContactController = async (req, res, next) => {
+  try {
+    const contactId = req.params.contactId;
 
-  res.status(200).json(updatedContact);
+    await removeContact(contactId);
+
+    res.status(200).send({ message: "Contact deleted." });
+  } catch (error) {
+    console.log("error :>> ", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-const deleteContactController = async (req, res, _) => {
-  const contactId = +req.params.contactId;
-  await removeContact(contactId);
+const putContactController = async (req, res, next) => {
+  try {
+    const contactId = req.params.contactId;
+    const updatedContact = await updateContact(contactId, req.body);
 
-  res.status(200).json({ message: "Contact deleted." });
+    res.status(200).json(updatedContact);
+  } catch (error) {
+    console.log("error :>> ", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateStatusContactController = async (req, res, next) => {
+  try {
+    const contactId = req.params.contactId;
+    const updatedContact = await updateStatusContact(contactId, req.body);
+
+    res.status(200).json(updatedContact);
+  } catch (error) {
+    console.log("error :>> ", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 module.exports = {
   getContactsController,
   getContactByIdController,
   addContactController,
-  putContactController,
   deleteContactController,
+  putContactController,
+  updateStatusContactController,
 };
