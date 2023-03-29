@@ -1,14 +1,36 @@
-// const fs = require('fs/promises')
+const { Contacts } = require("./contactModel");
 
-const listContacts = async () => {}
+const listContacts = async (ownerId, { favorite, limit, page }) => {
+  const pagonationPage = +page || 1;
+  const pagonationLimit = +limit || 5;
+  const skip = (pagonationPage - 1) * pagonationLimit;
 
-const getContactById = async (contactId) => {}
+  const queryString = favorite
+    ? { $and: [{ owner: ownerId }, { favorite }] }
+    : { owner: ownerId };
 
-const removeContact = async (contactId) => {}
+  return await Contacts.find(queryString).skip(skip).limit(pagonationLimit);
+};
 
-const addContact = async (body) => {}
+const getContactById = async (contactId) => {
+  return await Contacts.findOne({ _id: contactId });
+};
 
-const updateContact = async (contactId, body) => {}
+const removeContact = async (contactId) => {
+  return await Contacts.findByIdAndDelete(contactId);
+};
+
+const addContact = async (body) => {
+  return await Contacts.create(body);
+};
+
+const updateContact = async (contactId, body) => {
+  return await Contacts.findByIdAndUpdate(contactId, body, { new: true });
+};
+
+const updateStatusContact = async (contactId, body) => {
+  return await Contacts.findByIdAndUpdate(contactId, body, { new: true });
+};
 
 module.exports = {
   listContacts,
@@ -16,4 +38,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-}
+  updateStatusContact,
+};
