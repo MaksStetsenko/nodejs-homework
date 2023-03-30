@@ -1,7 +1,15 @@
 const { Contacts } = require("./contactModel");
 
-const listContacts = async () => {
-  return await Contacts.find();
+const listContacts = async (ownerId, { favorite, limit, page }) => {
+  const pagonationPage = +page || 1;
+  const pagonationLimit = +limit || 5;
+  const skip = (pagonationPage - 1) * pagonationLimit;
+
+  const queryString = favorite
+    ? { $and: [{ owner: ownerId }, { favorite }] }
+    : { owner: ownerId };
+
+  return await Contacts.find(queryString).skip(skip).limit(pagonationLimit);
 };
 
 const getContactById = async (contactId) => {
